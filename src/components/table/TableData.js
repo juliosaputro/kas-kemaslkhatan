@@ -74,12 +74,14 @@ export default function TableData() {
                   k.tanggal.seconds * 1000 +
                     k.tanggal.seconds / 1000000
                 );
-                const tanggal = tgl.toLocaleDateString();
+                const tanggal = tgl.getDate()
+                const month = tgl.getMonth()
+                const year = tgl.getFullYear()
                 
                 return (
                 <TableRow key={k.id}>
                     {/* <TableCell align="center">(0++)</TableCell> */}
-                    <TableCell align="center">{tanggal}</TableCell>
+                    <TableCell align="center">{tanggal}/{month}/{year}</TableCell>
                     <TableCell align="center">{rupiah(k.pemasukan)}</TableCell>
                     <TableCell align="center">{rupiah(k.pengeluaran)}</TableCell>
                     <TableCell align="center">{k.keterangan}</TableCell>
