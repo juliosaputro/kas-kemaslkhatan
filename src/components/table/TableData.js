@@ -6,9 +6,12 @@ import {
   addDoc,
   doc,
   updateDoc,
+  orderBy,
   deleteDoc,
   QuerySnapshot,
+  query,
 } from "firebase/firestore";
+import { DataGrid } from '@mui/x-data-grid';
 import {
   Table,
   TableBody,
@@ -16,6 +19,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Paper,
   Button,
   Stack,
@@ -24,10 +28,11 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle,
+  DialogTitle
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeIcon from "@mui/icons-material/Mode";
+import { data } from "../../constants";
 
 export default function TableData() {
   const dataCollectionRef = collection(db, "kas");
@@ -43,7 +48,7 @@ export default function TableData() {
 
   useEffect(() => {
     const getKas = async () => {
-      const data = await getDocs(dataCollectionRef);
+      const data = await getDocs(query(dataCollectionRef, orderBy('tanggal', 'asc')));
       setKas(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getKas();
@@ -91,11 +96,28 @@ export default function TableData() {
     window.location.reload(true)
   }
 
-  // console.log(editId, 'idEdit')
+
+  // Table Pagination
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - kas.length) : 0;
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     // <>
     <div>
+
       <TableContainer
         component={Paper}
         style={{ boxShadow: "0px 13px 20px 0px #80808029", borderRadius: 12 }}
@@ -113,19 +135,16 @@ export default function TableData() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {kas.map((k, y) => {
-              // console.log(nikahs,'data')
+            {kas
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((k, y) => {
               const tgl = new Date(
                 k.tanggal.seconds * 1000 + k.tanggal.seconds / 1000000
               );
               const tanggal = tgl.getDate();
-              const month = tgl.getMonth();
+              const month = tgl.getMonth() + 1;
               const year = tgl.getFullYear();
               const id_data = y + 1;
-              function delete_data() {
-                deleteDoc(doc(db, "kas", id_data));
-                window.location.reload(true);
-              }
 
               return (
                 <TableRow key={k.id}>
@@ -135,7 +154,7 @@ export default function TableData() {
                   </TableCell>
                   <TableCell align="center">{rupiah(k.pemasukan)}</TableCell>
                   <TableCell align="center">{rupiah(k.pengeluaran)}</TableCell>
-                  <TableCell align="center">{k.keterangan}</TableCell>
+                  <TableCell align="left">{k.keterangan}</TableCell>
                   <TableCell align="center">{rupiah(k.saldo)}</TableCell>
                   <TableCell align="center">
                     <Stack direction="row" spacing={2}>
@@ -207,7 +226,6 @@ export default function TableData() {
                           <Button onClick={()=>{
                             updateData(k.id, k.pemasukan, k.pengeluaran, k.tanggal, k.keterangan, k.saldo)
                           }}>Edit</Button>
-                          {/* <Button onClick={handleClose}>Subscribe</Button> */}
                         </DialogActions>
                       </Dialog>
                     </Stack>
@@ -217,6 +235,15 @@ export default function TableData() {
             })}
           </TableBody>
         </Table>
+        <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={kas.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
     </div>
   );

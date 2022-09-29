@@ -96,12 +96,3 @@ const OverallList = () => {
 
 export default OverallList
 
-// import React from 'react'
-
-// export default function OverallList() {
-//   return (
-//     <div>
-      
-//     </div>
-//   )
-// }
