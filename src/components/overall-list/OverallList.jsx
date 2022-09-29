@@ -14,22 +14,7 @@ const icons = [
 const OverallList = () => {
 
     const dataCollectionRef = collection(db, "kas");
-    // const [kas, setKas] = useState([]);
-
-    // const saldo = (kas.reduce((x,y)=>x=x + y.saldo,0))
-    // // const pnglrn = kas.reduce((total, currentValue) => total = total + currentValue.pengeluaran,0);
-    // const newsaldo = parseInt(saldo + pemasukan - pengeluaran);
-
-    // useEffect(() => {
-    //     const getKas = async () => {
-    //       const data = await getDocs(dataCollectionRef);
-    //     //   console.log(data, "data");
-    //       setKas(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    //     };
-    //     console.log(kas, 'data')
-    
-    //     getKas();
-    //   }, []);
+   
     const [pemasukan, setPemasukan] = useState(0)
     const [pengeluaran, setPengeluaran] = useState(0)
     const [keterangan, setKeterangan] = useState("")
